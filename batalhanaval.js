@@ -1,60 +1,91 @@
-console.log("Funcionando");
-
 const board = document.getElementById("tabuleiro");
 const cells = board.getElementsByTagName("td");
 const lines =  board.getElementsByTagName("tr").length;
 const cols = cells.length / lines;
-const shipSize = 3;
+//const shipSize = 3;
+const shipSizes = [5, 3, 3, 2, 1];
 const shipLocations = createShip();
 let hitTarget = 0;
 
-for (let i=0; i < cells.length ; i++) {
-  cells[i].addEventListener('click',cellClick)
-  console.log(i);
+for (let i = 0; i < cells.length; i++) {
+  cells[i].addEventListener('click', cellClick)
 }
 
 function generateRandom(max) {
-  random = Math.floor(Math.random()*max);
+  random = Math.floor(Math.random() * max);
 
-  console.log(max);
   return random;
 }
 
 function createShip() {
+  ships = [];
 
-  let line = generateRandom(lines);
-  let col = generateRandom(cols - shipSize);
-  ship = [];
+  for (i = 0; i < shipSizes.length; i++) {
+    let shipSize = shipSizes[i];
+    let ship = [];
+    let overlap = false;
 
-  for (i = 0; i < shipSize; i++) {
-    ship[i] = [line, col+i]
+    do {
+      overlap = false;
+      let line = generateRandom(lines);
+      let col = generateRandom(cols - shipSize);
+      
+      for (j = 0; j < shipSize; j++) {
+        ship[j] = [line, col + j];
+      }
+      
+      for (let k = 0; k < ships.length; k++) {
+        if (checkCollision(ship, ships[k])) {
+          overlap = true;
+          break;
+        }
+      }
+      
+    } while (overlap);
+
+    ships[i] = ship;
   }
 
-  console.log(ship);
-  return ship;
+  return ships;
+}
+
+function checkCollision(ship1, ship2) {
+  for (let i = 0; i < ship1.length; i++) {
+    for (let j = 0; j < ship2.length; j++) {
+      if (ship1[i][0] === ship2[j][0] && ship1[i][1] === ship2[j][1]) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 function cellClick() {
   const row = this.parentNode.rowIndex;
   const col = this.cellIndex;
-  console.log(row + " x " + col);
 
-  if (checkForHit(row, col) == true) {
-    this.style.backgroundColor = '#b6ff7f'
+  if (checkForHit(row, col)) {
+    this.style.backgroundColor = 'red'
     checkForWin();
-  }else{
-    this.style.backgroundColor = '#716ddb'
+  } else {
+    this.style.backgroundColor = 'yellow'
   }
-  this.removeEventListener('click',cellClick);
+  this.removeEventListener('click', cellClick);
 }
 
-function checkForHit(row,col) {
-  for(let i=0; i<shipLocations.length; i++) {
-    console.log(shipLocations[i]);
-    if (shipLocations[i][0] == row && shipLocations[i][1] == col ) {
-      hitTarget++;
-      shipLocations.splice(i,1);
-      return true;
+function checkForHit(row, col) {
+  for (let i = 0; i < shipLocations.length; i++) {
+
+    for (let j = 0; j < shipLocations[i].length; j++) {
+      if (shipLocations[i][j][0] === row && shipLocations[i][j][1] === col) {
+        hitTarget++;
+        shipLocations[i].splice(j, 1);
+
+        if (!shipLocations[i].length) {
+          shipLocations.splice(i, 1);
+        }
+        return true;
+      }
     }
   }
 
@@ -62,7 +93,8 @@ function checkForHit(row,col) {
 }
 
 function checkForWin() {
-  if(shipLocations.length == 0) {
-    alert("Paranbéns!!! Você ganhou");
+  if (shipLocations.length === 0) {
+    alert("Parabéns!!! Você ganhou");
+    location.reload();
   }
 }
