@@ -65,10 +65,10 @@ function cellClick() {
   const col = this.cellIndex;
 
   if (checkForHit(row, col)) {
-    this.style.backgroundColor = 'red'
+    this.style.backgroundColor = '#FF0000' /*cor da tiro*/
     checkForWin();
   } else {
-    this.style.backgroundColor = 'yellow'
+    this.style.backgroundColor = '#1E90FF	' /*cor da agua*/
   }
   this.removeEventListener('click', cellClick);
 }
