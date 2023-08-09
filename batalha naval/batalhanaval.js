@@ -109,7 +109,7 @@ function cellClick() {
     checkForWin();
   } else {
     this.style.backgroundColor = '#1E90FF	' /*cor da agua*/
-    this.style.border = '1px solid blue'; /*borda azul*/
+    this.style.border = '1px solid #1E90FF '; /*borda azul*/
   }
   this.removeEventListener('click', cellClick);
 }
